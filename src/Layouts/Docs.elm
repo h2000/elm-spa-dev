@@ -1,0 +1,71 @@
+module Layouts.Docs exposing (view)
+
+import Element exposing (..)
+import Element.Font as Font
+import Ui exposing (colors)
+import Utils.Spa as Spa
+
+
+view : Spa.LayoutContext msg -> Element msg
+view { page } =
+    row
+        [ width (fill |> maximum 720)
+        , centerX
+        , paddingEach
+            { top = 32
+            , left = 16
+            , right = 16
+            , bottom = 128
+            }
+        ]
+        [ el [ width (px 200) ] viewSidebar
+        , el [ alignTop ] page
+        ]
+
+
+viewSidebar : Element msg
+viewSidebar =
+    column
+        [ spacing 32 ]
+        [ el [ Font.semiBold, Font.size 20 ] (text "docs")
+        , viewLink ( "overview", "/docs" )
+        , column
+            [ spacing 16 ]
+            [ viewSectionHeader "elm-spa"
+            , viewLinks
+                [ ( "overview", "/docs/elm-spa" )
+                , ( "elm-spa init", "/docs/elm-spa/init" )
+                , ( "elm-spa add", "/docs/elm-spa/add" )
+                , ( "elm-spa build", "/docs/elm-spa/build" )
+                ]
+            , viewSectionHeader "pages"
+            , viewLinks
+                [ ( "overview", "/docs/pages" )
+                , ( "static", "/docs/pages/static" )
+                , ( "sandbox", "/docs/pages/sandbox" )
+                , ( "element", "/docs/pages/element" )
+                , ( "component", "/docs/pages/component" )
+                ]
+            ]
+        ]
+
+
+viewSectionHeader : String -> Element msg
+viewSectionHeader label =
+    el [ Font.semiBold, Font.size 20, alpha 0.5 ] (text label)
+
+
+viewLinks : List ( String, String ) -> Element msg
+viewLinks links =
+    column
+        [ spacing 14, Font.color colors.coral ]
+        (links |> List.map viewLink)
+
+
+viewLink : ( String, String ) -> Element msg
+viewLink ( label, url ) =
+    link
+        [ Font.size 16, mouseOver [ alpha 0.5 ] ]
+        { url = url
+        , label = text label
+        }
