@@ -1,10 +1,11 @@
-module Ui exposing (colors, hero, viewButton)
+module Ui exposing (colors, hero, viewButton,markdown)
 
 import Element exposing (..)
 import Element.Background as Background
 import Element.Border as Border
 import Element.Font as Font
 import Html.Attributes as Attr
+import Markdown
 
 
 colors : { coral : Element.Color, white : Element.Color }
@@ -67,3 +68,16 @@ transition duration properties =
                 |> List.map (\p -> p ++ " " ++ String.fromInt duration ++ "ms ease-in-out")
                 |> String.join ", "
             )
+
+markdown : String -> Element msg
+markdown =
+    let
+        defaults =
+            Markdown.defaultOptions
+    in
+    Markdown.toHtmlWith
+        { defaults | sanitize = False, githubFlavored = Just { tables = True, breaks = False } }
+        [ Attr.class "markdown" ]
+        >> Element.html
+        >> List.singleton
+        >> paragraph []

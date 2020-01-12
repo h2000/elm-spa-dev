@@ -2,7 +2,7 @@ module Layouts.Docs exposing (view)
 
 import Element exposing (..)
 import Element.Font as Font
-import Ui exposing (colors)
+import Ui exposing (colors, markdown)
 import Utils.Spa as Spa
 
 
@@ -12,23 +12,23 @@ view { page } =
         [ width (fill |> maximum 720)
         , centerX
         , paddingEach
-            { top = 32
+            { top = 40
             , left = 16
             , right = 16
             , bottom = 128
             }
         ]
-        [ el [ width (px 200) ] viewSidebar
-        , el [ alignTop ] page
+        [ el [ alignTop, width (px 200) ] viewSidebar
+        , el [ alignTop, width fill ] page
         ]
 
 
 viewSidebar : Element msg
 viewSidebar =
     column
-        [ spacing 32 ]
-        [ el [ Font.semiBold, Font.size 20 ] (text "docs")
-        , viewLink ( "overview", "/docs" )
+        [ spacing 16 ]
+        [ el [ Font.semiBold, Font.size 24 ] (text "docs")
+        , el [ Font.color colors.coral ] (viewLink ( "overview", "/docs" ))
         , column
             [ spacing 16 ]
             [ viewSectionHeader "elm-spa"

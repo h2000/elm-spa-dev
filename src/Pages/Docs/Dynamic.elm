@@ -3,9 +3,10 @@ module Pages.Docs.Dynamic exposing (Model, Msg, page)
 import Element exposing (..)
 import Element.Font as Font
 import Generated.Docs.Params as Params
+import Http
 import Spa.Page
-import Utils.Spa exposing (Page)
 import Ui exposing (colors)
+import Utils.Spa exposing (Page)
 
 
 page : Page Params.Dynamic Model Msg model msg appMsg
@@ -24,13 +25,16 @@ page =
 
 
 type alias Model =
-    { slug : String }
+    { content : String }
 
 
 init : Params.Dynamic -> ( Model, Cmd Msg )
 init { param1 } =
-    ( { slug = param1 }
-    , Cmd.none
+    ( { content = "" }
+    , Http.get
+        { expect = Http.expectString FetchedContent
+        , url = "/content/docs/" ++ param1 ++ ".md"
+        }
     )
 
 
@@ -39,15 +43,20 @@ init { param1 } =
 
 
 type Msg
-    = Msg
+    = FetchedContent (Result Http.Error String)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    ( model
-    , Cmd.none
-    )
-
+    case msg of
+        FetchedContent (Ok content) ->
+            ( { model | content = content }
+            , Cmd.none
+            )
+        FetchedContent (Err _) ->     
+          ( { model | content = "something is goofed" }
+            , Cmd.none
+            )
 
 
 -- SUBSCRIPTIONS
@@ -63,5 +72,5 @@ subscriptions model =
 
 
 view : Model -> Element Msg
-view model = text model.slug
-
+view model =
+    Ui.markdown model.content

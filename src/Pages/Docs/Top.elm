@@ -2,38 +2,75 @@ module Pages.Docs.Top exposing (Model, Msg, page)
 
 import Element exposing (..)
 import Generated.Docs.Params as Params
+import Http
 import Spa.Page
-import Ui exposing (colors)
+import Ui exposing (markdown)
 import Utils.Spa exposing (Page)
-import Markdown
-
-type alias Model =
-    ()
-
-
-type alias Msg =
-    Never
 
 
 page : Page Params.Top Model Msg model msg appMsg
 page =
-    Spa.Page.static
+    Spa.Page.element
         { title = always "Docs.Top"
+        , init = always init
+        , update = always update
+        , subscriptions = always subscriptions
         , view = always view
         }
+
+
+
+-- INIT
+
+
+type alias Model =
+    { content : String }
+
+
+init : Params.Top -> ( Model, Cmd Msg )
+init _ =
+    ( { content = "" }
+    , Http.get
+        { expect = Http.expectString FetchedContent
+        , url = "/content/docs.md"
+        }
+    )
+
+
+
+-- UPDATE
+
+
+type Msg
+    = FetchedContent (Result Http.Error String)
+
+
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
+    case msg of
+        FetchedContent (Ok content) ->
+            ( { model | content = content }
+            , Cmd.none
+            )
+        FetchedContent (Err _) ->     
+          ( { model | content = "something is goofed" }
+            , Cmd.none
+            )
+
+
+
+-- SUBSCRIPTIONS
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.none
 
 
 
 -- VIEW
 
 
-view : Element Msg
-view = markdown """
-### header 1
-- sdfa
-- dafd
- """
-    
-markdown : String -> Element msg
-markdown content =
-    Element.html <| Markdown.toHtml [] content
+view : Model -> Element Msg
+view model =
+    Ui.markdown  model.content

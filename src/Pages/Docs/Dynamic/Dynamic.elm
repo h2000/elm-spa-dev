@@ -4,12 +4,14 @@ import Element exposing (..)
 import Generated.Docs.Dynamic.Params as Params
 import Spa.Page
 import Utils.Spa exposing (Page)
+import Ui
+import Http
 
 
 page : Page Params.Dynamic Model Msg model msg appMsg
 page =
     Spa.Page.element
-        { title = always "Docs.Dynamic.Dynamic"
+        { title = always "Docs.Dynamic"
         , init = always init
         , update = always update
         , subscriptions = always subscriptions
@@ -22,15 +24,16 @@ page =
 
 
 type alias Model =
-    { section : String
-    , page : String
-    }
+    { content : String }
 
 
 init : Params.Dynamic -> ( Model, Cmd Msg )
-init { param1, param2 } =
-    ( { section = param1, page = param2 }
-    , Cmd.none
+init { param1 , param2 } =
+    ( { content = "" }
+    , Http.get
+        { expect = Http.expectString FetchedContent
+        , url = "/content/docs/" ++ param1 ++ "/" ++ param2++ ".md"
+        }
     )
 
 
@@ -39,15 +42,20 @@ init { param1, param2 } =
 
 
 type Msg
-    = Msg
+    = FetchedContent (Result Http.Error String)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    ( model
-    , Cmd.none
-    )
-
+    case msg of
+        FetchedContent (Ok content) ->
+            ( { model | content = content }
+            , Cmd.none
+            )
+        FetchedContent (Err _) ->     
+          ( { model | content = "something is goofed" }
+            , Cmd.none
+            )
 
 
 -- SUBSCRIPTIONS
@@ -64,7 +72,4 @@ subscriptions model =
 
 view : Model -> Element Msg
 view model =
-    row [ spacing 32 ]
-        [ text model.section
-        , text model.page
-        ]
+    Ui.markdown model.content
