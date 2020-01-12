@@ -30,7 +30,7 @@ page =
 view : Element Msg
 view =
     column [centerX]
-        [ Ui.hero { title = "elm-spa", description = "My ELM SPA Site, buttons = [ ( "guide", "/guide" ) ] }
+        [ Ui.hero { title = "elm-spa", description = "My ELM SPA Site", buttons = [ ( "guide", "/guide" ) ] }
 
         -- , Ui.hero { title = "hello world", description = "Single page apps made easy" }
         ]

@@ -17959,7 +17959,7 @@ var $author$project$Pages$Top$view = A2(
 					[
 						_Utils_Tuple2('guide', '/guide')
 					]),
-				description: 'Single page apps made easy',
+				description: 'My ELM SPA Site',
 				title: 'elm-spa'
 			})
 		]));
